@@ -6,7 +6,7 @@ Requisitos:
  - Python 3
  - bibliotecas: pillow, pygame
    pip3 install pillow pygame
- - Banco SQLite: urna.db com tabelas 'candidatos' e 'votos'.
+ - Banco SQLite: votos.db com tabelas 'candidatos' e 'votos'.
  - Fotos dos candidatos em ./images/candidate_<id>.png (id = candidato.id)
  - Som de confirmação em ./sounds/puc.wav
 
