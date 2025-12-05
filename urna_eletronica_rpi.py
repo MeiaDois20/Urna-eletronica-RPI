@@ -8,7 +8,7 @@ Requisitos:
    pip3 install pillow pygame
  - Banco SQLite: votos.db com tabelas 'candidatos' e 'votos'.
  - Fotos dos candidatos em ./images/candidate_<id>.png (id = candidato.id)
- - Som de confirmação em ./sounds/puc.wav
+ - Som de confirmação em ./sounds/confirma-urna.wav
 
 Como rodar:
  - Coloque esse arquivo no Raspberry Pi, crie a pasta images e sounds
@@ -39,7 +39,7 @@ DB_PATH = os.path.join(BASE_DIR, "votos.db")
 IMAGES_DIR = os.path.join(BASE_DIR, "images")
 SOUNDS_DIR = os.path.join(BASE_DIR, "sounds")
 
-PUC_SOUND = os.path.join(SOUNDS_DIR, "confirma-urna.mp3")
+PUC_SOUND = os.path.join(SOUNDS_DIR, "confirma-urna.wav")
 PHOTO_PLACEHOLDER = os.path.join(IMAGES_DIR, "placeholder.png")
 MAX_DIGITS = 2  # ajuste conforme necessidade
 
@@ -68,6 +68,7 @@ class Model:
             CREATE TABLE IF NOT EXISTS votos (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 candidato_id INTEGER,
+                voto_tipo TEXT NOT NULL,
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -445,8 +446,8 @@ if __name__ == '__main__':
     cur = conn.cursor()
 
     candidatos = [
-        (13, "Lula", "PT"),
-        (22, "Bolsonaro", "PL"),
+        (13, "José Adaulto Leite Kenteni", "Infor"),
+        (22, "Jarisvraldo", "Agro"),
     ]
 
     for c in candidatos:
