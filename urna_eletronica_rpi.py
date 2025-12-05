@@ -33,12 +33,16 @@ import threading
 import time
 
 # ----------------- CONFIGURAÇÕES -----------------
-DB_PATH = "votos.db"
-IMAGES_DIR = "images"
-SOUNDS_DIR = "sounds"
-PUC_SOUND = os.path.join(SOUNDS_DIR, "puc.wav")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+DB_PATH = os.path.join(BASE_DIR, "votos.db")
+IMAGES_DIR = os.path.join(BASE_DIR, "images")
+SOUNDS_DIR = os.path.join(BASE_DIR, "sounds")
+
+PUC_SOUND = os.path.join(SOUNDS_DIR, "confirma-urna.mp3")
 PHOTO_PLACEHOLDER = os.path.join(IMAGES_DIR, "placeholder.png")
 MAX_DIGITS = 2  # ajuste conforme necessidade
+
 
 # ----------------- MODELO (Banco) -----------------
 class Model:
@@ -78,13 +82,26 @@ class Model:
         conn.close()
         return row
 
+    
     def gravar_voto(self, candidato_id):
-        conn = self._conn()
+        conn = self._conn()  # conexão aberta dentro do método
         cur = conn.cursor()
-        # candidato_id pode ser None para BRANCO
-        cur.execute("INSERT INTO votos (candidato_id) VALUES (?)", (candidato_id,))
+
+        # candidato_id pode ser None para BRANCO ou NULO
+        if candidato_id is None:
+            voto_tipo = "BRANCO"
+            candidato_val = None
+        else:
+            voto_tipo = "VALIDO"
+            candidato_val = candidato_id
+
+        cur.execute(
+            "INSERT INTO votos (candidato_id, voto_tipo) VALUES (?, ?)",
+            (candidato_val, voto_tipo)
+        )
         conn.commit()
         conn.close()
+
 
     def contar_votos(self):
         conn = self._conn()
@@ -422,6 +439,27 @@ if __name__ == '__main__':
             img.save(PHOTO_PLACEHOLDER)
         except Exception:
             pass
+    
+    # Inserir candidatos automaticamente (execute só 1 vez)
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+
+    candidatos = [
+        (13, "Lula", "PT"),
+        (22, "Bolsonaro", "PL"),
+    ]
+
+    for c in candidatos:
+        try:
+            cur.execute("INSERT INTO candidatos (id, nome, partido) VALUES (?, ?, ?)", c)
+        except:
+            pass  # ignora se já existe
+
+    conn.commit()
+    conn.close()
 
     controller = Controller()
     controller.run()
+
+
+
